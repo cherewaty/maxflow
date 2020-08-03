@@ -1,13 +1,12 @@
+#include <algorithm>
+#include <iostream>
+#include <random>
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
-#include <time.h>
-#include <random>
-#include <vector>
-#include <iostream>
-#include <algorithm>
 #include <string>
+#include <time.h>
 #include <tuple>
+#include <vector>
 #include "CycleTimer.h"
 #include "sequential.h"
 

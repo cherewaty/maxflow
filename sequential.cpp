@@ -1,9 +1,9 @@
+#include <algorithm>
+#include <limits>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <queue>
-#include <algorithm>
-#include <limits>
 #include "sequential.h"
 
 #define IDX(i, j, n) ((i) * (n) + (j))
