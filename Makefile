@@ -8,8 +8,8 @@ CC_FILES   := sequential.cpp main.cpp
 
 ARCH=$(shell uname | sed -e 's/-.*//g')
 OBJDIR=objs
-CXX=g++ -m64 -std=c++11
-CXXFLAGS=-O3 -Wall -Wextra -g
+CXX=g++
+CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
 

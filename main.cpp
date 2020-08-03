@@ -39,7 +39,7 @@ Graph *generateGraph(int numVxs, int numEdges, int maxCap)
   g->capacities[IDX(0, first, g->n)] = capacity;
   int remaining = numEdges - 1;
   int last = first;
-  for (auto it = (path.begin()++); ((it != path.end()) && (*it != t)); it++)
+  for (std::vector<int>::iterator it = (path.begin()++); ((it != path.end()) && (*it != t)); it++)
   {
     capacity = (rand() % (maxCap - 1)) + 1;
     g->capacities[IDX(last, (*it), g->n)] = capacity;

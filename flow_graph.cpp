@@ -99,7 +99,7 @@ void FlowGraph::DeleteEdge(int u, int v)
 
 void FlowGraph::AddEdges(std::vector<std::tuple<int, int, int>> *edges)
 {
-  for (auto it = (*edges).begin(); it != (*edges).end(); it++)
+  for (std::vector<std::tuple<int, int, int>>::iterator it = (*edges).begin(); it != (*edges).end(); it++)
   {
     int u = std::get<0>(*it);
     int v = std::get<1>(*it);
@@ -110,7 +110,7 @@ void FlowGraph::AddEdges(std::vector<std::tuple<int, int, int>> *edges)
 
 void FlowGraph::DeleteEdges(std::vector<std::tuple<int, int>> *edges)
 {
-  for (auto it = (*edges).begin(); it != (*edges).end(); it++)
+  for (std::vector<std::tuple<int, int>>::iterator it = (*edges).begin(); it != (*edges).end(); it++)
   {
     int u = std::get<0>(*it);
     int v = std::get<1>(*it);
