@@ -1,8 +1,33 @@
-hello : hello.o
-	g++ -o hello hello.o
 
-hello.o: hello.cpp
-	g++ -c hello.cpp
+EXECUTABLE := maxflow
+
+CC_FILES   := sequential.cpp main.cpp
+
+
+###########################################################
+
+ARCH=$(shell uname | sed -e 's/-.*//g')
+OBJDIR=objs
+CXX=g++ -m64 -std=c++11
+CXXFLAGS=-O3 -Wall -Wextra -g
+HOSTNAME=$(shell hostname)
+
+
+OBJS=$(OBJDIR)/sequential.o $(OBJDIR)/main.o
+
+
+.PHONY: dirs clean
+
+default: $(EXECUTABLE)
+
+dirs:
+		mkdir -p $(OBJDIR)/
 
 clean:
-	rm *.o hello
+		rm -rf $(OBJDIR) *~ $(EXECUTABLE)
+
+$(EXECUTABLE): dirs $(OBJS)
+		$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+
+$(OBJDIR)/%.o: %.cpp
+		$(CXX) $< $(CXXFLAGS) -c -o $@
