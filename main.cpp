@@ -29,7 +29,6 @@ Graph *generateGraph(int numVxs, int numEdges, int maxCap)
     path.push_back(i);
   }
 
-  // std::random_shuffle(path.begin(), path.end());
   std::random_device rd;
   std::mt19937 randomizer(rd());
   std::shuffle(path.begin(), path.end(), randomizer);
