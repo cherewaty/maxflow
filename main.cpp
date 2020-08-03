@@ -7,7 +7,7 @@
 #include <time.h>
 #include <tuple>
 #include <vector>
-#include "CycleTimer.h"
+#include "cycle_timer.h"
 #include "sequential.h"
 
 #define IDX(i, j, n) ((i) * (n) + (j))
