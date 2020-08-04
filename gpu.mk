@@ -1,7 +1,7 @@
 
-EXECUTABLE := maxflow
+EXECUTABLE := maxflow-parallel
 
-CC_FILES   := main.cpp
+CC_FILES   := main-gpu.cpp
 
 
 ###########################################################
@@ -13,7 +13,7 @@ CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
 
-OBJS=$(OBJDIR)/sequential.o $(OBJDIR)/benchmark.o $(OBJDIR)/main.o
+OBJS=$(OBJDIR)/gpu.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
 
 
 .PHONY: dirs clean
