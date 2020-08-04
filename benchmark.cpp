@@ -156,11 +156,11 @@ void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std
       check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
       if (!check)
       {
-        std::cout << "dinic flows don't agree with max flow on graph " << i << std::endl;
+        std::cout << algorithmName.c_str() << " flows don't agree with max flow on graph " << i << std::endl;
       }
       if ((refFlow != -1) && (result->maxFlow != refFlow))
       {
-        std::cout << "dinic flow doesn't agree with refFlow on graph " << i << std::endl;
+        std::cout << algorithmName.c_str() << " flow doesn't agree with refFlow on graph " << i << std::endl;
       }
       if (refFlow == -1)
       {
