@@ -108,7 +108,6 @@ void runTests(int numGraphs, int trials)
   Flow *result;
   bool check;
   srand(0);
-  bool testEdmondsKarp = true;
   bool testDinics = true;
   int smallGraphNum = 0; // used for correctness testing, not benchmarking
   int totalGraphs = numGraphs + smallGraphNum;
@@ -117,7 +116,6 @@ void runTests(int numGraphs, int trials)
   int numEdges[] = {1000, 5000, 5000, 10000, 10000, 20000, 50000, 100000, 100000, 500000};
   int maxCap = 50;
   Graph *graphs[totalGraphs];
-  double edKarpSeqTimes[numGraphs];
   double dinicSeqTimes[numGraphs];
 
   for (int i = 0; i < numGraphs; i++)
@@ -139,70 +137,40 @@ void runTests(int numGraphs, int trials)
   for (int i = 0; i < totalGraphs; i++)
   {
     printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);
+
     for (int j = 0; j < trials; j++)
     {
       refFlow = -1;
 
-      // first, test Edmonds-Karp
-      if (testEdmondsKarp)
+      start = CycleTimer::currentSeconds();
+      result = dinicSeq(graphs[i], 0, (graphs[i]->n) - 1);
+      finalTime = CycleTimer::currentSeconds() - start;
+      if (i < numGraphs)
       {
-        start = CycleTimer::currentSeconds();
-        result = edKarpSeq(graphs[i], 0, (graphs[i]->n) - 1);
-        finalTime = CycleTimer::currentSeconds() - start;
-        if (i < numGraphs)
-        {
-          edKarpSeqTimes[i] += finalTime;
-        }
-        if (j == (trials - 1))
-        {
-          edKarpSeqTimes[i] /= trials;
-        }
-        check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
-        if (!check)
-        {
-          std::cout << "edKarp flows don't agree with max flow on graph " << i << std::endl;
-        }
+        dinicSeqTimes[i] += finalTime;
+      }
+      if (j == (trials - 1))
+      {
+        dinicSeqTimes[i] /= trials;
+      }
+      check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
+      if (!check)
+      {
+        std::cout << "dinic flows don't agree with max flow on graph " << i << std::endl;
+      }
+      if ((refFlow != -1) && (result->maxFlow != refFlow))
+      {
+        std::cout << "dinic flow doesn't agree with refFlow on graph " << i << std::endl;
+      }
+      if (refFlow == -1)
+      {
         refFlow = result->maxFlow;
-
-        free(result->finalEdgeFlows);
-        free(result);
-
-        printf("Edmonds Karp time %f\n", finalTime);
       }
 
-      // now Dinics
-      if (testDinics)
-      {
-        start = CycleTimer::currentSeconds();
-        result = dinicSeq(graphs[i], 0, (graphs[i]->n) - 1);
-        finalTime = CycleTimer::currentSeconds() - start;
-        if (i < numGraphs)
-        {
-          dinicSeqTimes[i] += finalTime;
-        }
-        if (j == (trials - 1))
-        {
-          dinicSeqTimes[i] /= trials;
-        }
-        check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
-        if (!check)
-        {
-          std::cout << "dinic flows don't agree with max flow on graph " << i << std::endl;
-        }
-        if ((refFlow != -1) && (result->maxFlow != refFlow))
-        {
-          std::cout << "dinic flow doesn't agree with refFlow on graph " << i << std::endl;
-        }
-        if (refFlow == -1)
-        {
-          refFlow = result->maxFlow;
-        }
+      free(result->finalEdgeFlows);
+      free(result);
 
-        free(result->finalEdgeFlows);
-        free(result);
-
-        printf("Dinic time %f\n", finalTime);
-      }
+      printf("Dinic time %f\n", finalTime);
     }
     free(graphs[i]->capacities);
     free(graphs[i]);
