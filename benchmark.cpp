@@ -102,7 +102,7 @@ bool checkFlow(int totalFlow, int *flows, int n)
   return (sFlow == tFlow) && (sFlow == totalFlow);
 }
 
-void runTests()
+void runTests(int numGraphs, int trials)
 {
   int refFlow;
   Flow *result;
@@ -110,8 +110,6 @@ void runTests()
   srand(0);
   bool testEdmondsKarp = true;
   bool testDinics = true;
-  int numGraphs = 5;
-  int trials = 1;        // set to >1 for better averaging results
   int smallGraphNum = 0; // used for correctness testing, not benchmarking
   int totalGraphs = numGraphs + smallGraphNum;
   double start, finalTime;
@@ -121,10 +119,12 @@ void runTests()
   Graph *graphs[totalGraphs];
   double edKarpSeqTimes[numGraphs];
   double dinicSeqTimes[numGraphs];
+
   for (int i = 0; i < numGraphs; i++)
   {
     graphs[i] = generateGraph(numVxs[i], numEdges[i], maxCap);
   }
+
   // generate small graphs too
   for (int i = numGraphs; i < totalGraphs; i++)
   {
@@ -135,6 +135,7 @@ void runTests()
     int cap = (rand() % 1000) + 20;
     graphs[i] = generateGraph(vxs, edges, cap);
   }
+
   for (int i = 0; i < totalGraphs; i++)
   {
     printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);

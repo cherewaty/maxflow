@@ -4,4 +4,4 @@ Graph *generateGraph(int numVxs, int numEdges, int maxCap);
 
 bool checkFlow(int totalFlow, int *flows, int n);
 
-void runTests();
+void runTests(int numGraphs, int trials);
