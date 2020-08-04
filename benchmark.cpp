@@ -102,7 +102,7 @@ bool checkFlow(int totalFlow, int *flows, int n)
   return (sFlow == tFlow) && (sFlow == totalFlow);
 }
 
-void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std::string algorithmName)
+void runTests(Graph *graphs[], Flow *func(Graph *g, int s, int t), int numGraphs, int totalGraphs, int trials, std::string algorithmName)
 {
   int refFlow;
   Flow *result;
@@ -110,33 +110,10 @@ void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std
   double start, finalTime;
   double times[numGraphs];
 
-  srand(0);
-  int smallGraphNum = 0; // used for correctness testing, not benchmarking
-  int totalGraphs = numGraphs + smallGraphNum;
-  int numVxs[] = {500, 500, 2000, 2000, 5000, 5000, 20000, 20000, 40000, 40000};
-  int numEdges[] = {1000, 5000, 5000, 10000, 10000, 20000, 50000, 100000, 100000, 500000};
-  int maxCap = 50;
-  Graph *graphs[totalGraphs];
-
-  for (int i = 0; i < numGraphs; i++)
-  {
-    graphs[i] = generateGraph(numVxs[i], numEdges[i], maxCap);
-  }
-
-  // generate small graphs too
-  for (int i = numGraphs; i < totalGraphs; i++)
-  {
-    int vxs = (rand() % 1000) + 100;
-    int maxEdges = (vxs * (vxs - 1)) / 2;
-    int edges = (rand() % 20000) + vxs;
-    edges = std::min(edges, maxEdges);
-    int cap = (rand() % 1000) + 20;
-    graphs[i] = generateGraph(vxs, edges, cap);
-  }
-
   for (int i = 0; i < totalGraphs; i++)
   {
-    printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);
+    // printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);
+    printf("graph %d\n", i);
 
     for (int j = 0; j < trials; j++)
     {
@@ -145,23 +122,28 @@ void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std
       start = CycleTimer::currentSeconds();
       result = func(graphs[i], 0, (graphs[i]->n) - 1);
       finalTime = CycleTimer::currentSeconds() - start;
+
       if (i < numGraphs)
       {
         times[i] += finalTime;
       }
+
       if (j == (trials - 1))
       {
         times[i] /= trials;
       }
       check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
+
       if (!check)
       {
         std::cout << algorithmName.c_str() << " flows don't agree with max flow on graph " << i << std::endl;
       }
+
       if ((refFlow != -1) && (result->maxFlow != refFlow))
       {
         std::cout << algorithmName.c_str() << " flow doesn't agree with refFlow on graph " << i << std::endl;
       }
+
       if (refFlow == -1)
       {
         refFlow = result->maxFlow;
@@ -172,7 +154,5 @@ void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std
 
       printf("%s time %f\n", algorithmName.c_str(), finalTime);
     }
-    free(graphs[i]->capacities);
-    free(graphs[i]);
   }
 }
