@@ -1,7 +1,7 @@
 
 EXECUTABLE := maxflow
 
-CC_FILES   := sequential.cpp main.cpp
+CC_FILES   := main.cpp
 
 
 ###########################################################
@@ -13,7 +13,7 @@ CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
 
-OBJS=$(OBJDIR)/sequential.o $(OBJDIR)/main.o
+OBJS=$(OBJDIR)/sequential.o $(OBJDIR)/benchmark.o $(OBJDIR)/main.o
 
 
 .PHONY: dirs clean
