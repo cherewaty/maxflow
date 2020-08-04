@@ -2,7 +2,7 @@
 #include <random>
 #include <vector>
 #include "cycle_timer.h"
-#include "sequential.h"
+#include "graphs.h"
 
 #define IDX(i, j, n) ((i) * (n) + (j))
 
@@ -102,21 +102,21 @@ bool checkFlow(int totalFlow, int *flows, int n)
   return (sFlow == tFlow) && (sFlow == totalFlow);
 }
 
-void runTests(int numGraphs, int trials)
+void runTests(Flow *func(Graph *g, int s, int t), int numGraphs, int trials, std::string algorithmName)
 {
   int refFlow;
   Flow *result;
   bool check;
+  double start, finalTime;
+  double times[numGraphs];
+
   srand(0);
-  bool testDinics = true;
   int smallGraphNum = 0; // used for correctness testing, not benchmarking
   int totalGraphs = numGraphs + smallGraphNum;
-  double start, finalTime;
   int numVxs[] = {500, 500, 2000, 2000, 5000, 5000, 20000, 20000, 40000, 40000};
   int numEdges[] = {1000, 5000, 5000, 10000, 10000, 20000, 50000, 100000, 100000, 500000};
   int maxCap = 50;
   Graph *graphs[totalGraphs];
-  double dinicSeqTimes[numGraphs];
 
   for (int i = 0; i < numGraphs; i++)
   {
@@ -143,15 +143,15 @@ void runTests(int numGraphs, int trials)
       refFlow = -1;
 
       start = CycleTimer::currentSeconds();
-      result = dinicSeq(graphs[i], 0, (graphs[i]->n) - 1);
+      result = func(graphs[i], 0, (graphs[i]->n) - 1);
       finalTime = CycleTimer::currentSeconds() - start;
       if (i < numGraphs)
       {
-        dinicSeqTimes[i] += finalTime;
+        times[i] += finalTime;
       }
       if (j == (trials - 1))
       {
-        dinicSeqTimes[i] /= trials;
+        times[i] /= trials;
       }
       check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
       if (!check)
@@ -170,7 +170,7 @@ void runTests(int numGraphs, int trials)
       free(result->finalEdgeFlows);
       free(result);
 
-      printf("Dinic time %f\n", finalTime);
+      printf("%s time %f\n", algorithmName.c_str(), finalTime);
     }
     free(graphs[i]->capacities);
     free(graphs[i]);
