@@ -23,9 +23,6 @@ default: $(EXECUTABLE)
 dirs:
 		mkdir -p $(OBJDIR)/
 
-clean:
-		rm -rf $(OBJDIR) *~ $(EXECUTABLE)
-
 $(EXECUTABLE): dirs $(OBJS)
 		$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 

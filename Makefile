@@ -1,5 +1,5 @@
 
-EXECUTABLE := maxflow-parallel
+EXECUTABLE := maxflow
 
 CC_FILES   := main-gpu.cpp
 
@@ -24,7 +24,7 @@ dirs:
 		mkdir -p $(OBJDIR)/
 
 clean:
-		rm -rf $(OBJDIR) *~ $(EXECUTABLE)
+		rm -rf $(OBJDIR) *~ maxflow maxflow-sequential
 
 $(EXECUTABLE): dirs $(OBJS)
 		$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
