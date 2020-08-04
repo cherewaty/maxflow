@@ -102,7 +102,7 @@ bool checkFlow(int totalFlow, int *flows, int n)
   return (sFlow == tFlow) && (sFlow == totalFlow);
 }
 
-void runTests(Graph *graphs[], Flow *func(Graph *g, int s, int t), int numGraphs, int totalGraphs, int trials, std::string algorithmName)
+void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Graph *graphs[], int numGraphs, int trials)
 {
   int refFlow;
   Flow *result;
@@ -110,7 +110,7 @@ void runTests(Graph *graphs[], Flow *func(Graph *g, int s, int t), int numGraphs
   double start, finalTime;
   double times[numGraphs];
 
-  for (int i = 0; i < totalGraphs; i++)
+  for (int i = 0; i < numGraphs; i++)
   {
     // printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);
     printf("graph %d\n", i);
