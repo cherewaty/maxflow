@@ -1,4 +1,4 @@
-#include "../benchmark.h"
+#include "benchmark.h"
 #include "sequential.h"
 
 int main()

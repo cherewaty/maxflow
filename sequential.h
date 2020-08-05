@@ -1,4 +1,4 @@
-#include "../graphs.h"
+#include "graphs.h"
 
 /*
 *   Source from https://github.com/vulq/Flo
