@@ -8,7 +8,7 @@ CC_FILES   := main-gpu.cpp
 
 ARCH=$(shell uname | sed -e 's/-.*//g')
 OBJDIR=objs
-CXX=g++
+CXX=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
