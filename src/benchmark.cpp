@@ -1,7 +1,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
-#include "cycle_timer.h"
+#include "../vendor/cycle_timer.h"
 #include "graphs.h"
 
 #define IDX(i, j, n) ((i) * (n) + (j))

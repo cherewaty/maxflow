@@ -1,4 +1,4 @@
-#include "graphs.h"
+#include "../graphs.h"
 
 Flow *edKarpGpu(Graph *g, int s, int t);
 
