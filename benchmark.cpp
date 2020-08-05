@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -25,8 +26,7 @@ Graph *generateGraph(int numVxs, int numEdges, int maxCap)
 
   std::random_device rd;
   std::mt19937 randomizer(rd());
-  // std::shuffle(path.begin(), path.end(), randomizer);
-  std::random_shuffle(path.begin(), path.end());
+  std::shuffle(path.begin(), path.end(), randomizer);
 
   int t = numVxs - 1;
   int first = path.at(0);
