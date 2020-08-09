@@ -2,3 +2,4 @@
 *.o
 objs/
 maxflow
+maxflow-sequential
