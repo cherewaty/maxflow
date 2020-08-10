@@ -9,7 +9,6 @@ CC_FILES   := main-gpu.cpp
 ARCH=$(shell uname | sed -e 's/-.*//g')
 OBJDIR=objs
 CXX=nvcc
-NVCC=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
 CUDA_LINK_LIBS=-lcudart
@@ -35,4 +34,4 @@ $(OBJDIR)/%.o: %.cpp
 		$(CXX) $< $(CXXFLAGS) -c -o $@
 
 $(OBJDIR)/%.o: %.cu
-		$(NVCC) $< $(CXXFLAGS) -c -o $@
+		$(CXX) $< $(CXXFLAGS) -c -o $@
