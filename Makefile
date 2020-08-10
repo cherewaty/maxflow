@@ -12,6 +12,7 @@ CXX=g++
 NVCC=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
+CUDA_LINK_LIBS=-lcuda
 
 
 OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
@@ -28,7 +29,7 @@ clean:
 		rm -rf $(OBJDIR) *~ maxflow maxflow-sequential
 
 $(EXECUTABLE): dirs $(OBJS)
-		$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+		$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(CUDA_LINK_LIBS)
 
 $(OBJDIR)/%.o: %.cpp
 		$(CXX) $< $(CXXFLAGS) -c -o $@
