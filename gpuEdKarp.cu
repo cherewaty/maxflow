@@ -227,7 +227,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     cudaMemcpy(d_parents,parents,g->n * sizeof(int),cudaMemcpyHostToDevice);
     // backtrack
 
-    backTrack<<<1,1,>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,g->n);
+    backTrack<<<1,1>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,g->n);
     //copy device to host
     cudaMemcpy(flowMatrix,d_flowMaxtrix,g->n * g->n * sizeof(int),cudaMemcpyDeviceToHost);
     cudaMemcpy(parents,d_parents,g->n * sizeof(int),cudaMemcpyDeviceToHost);
