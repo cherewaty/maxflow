@@ -13,7 +13,7 @@ CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
 
-OBJS=$(OBJDIR)/gpu.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
+OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
 
 
 .PHONY: dirs clean
