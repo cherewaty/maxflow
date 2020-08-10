@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define IDX(i, j, n) ((i) * (n) + (j))
-/*
+
 __device__ int indexFinder(int i,int n, int j){
     return ((i) * (n) + (j));
 }
@@ -21,6 +21,7 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
       }
 }
 
+/*
 __global__ void nextQueue(int queueSize,int *addedToQueue,bool *hasResult,int *result,int *queue,int *queueIndex int *parents, int *pathCapacities,int u,int n,int *capacities, int *flowMatrix){
     *addedToQueue = 0;
     for (int v = 0; v < n; v++){
@@ -199,12 +200,18 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
 }
 
 // Edmonds-Karp algorithm to find max s-t flow
-Flow *edKarpGpu(Graph *g, int s, int t)
-{
+Flow *edKarpGpu(Graph *g, int s, int t){
   int flow = 0;
   int *flowMatrix = (int *)calloc((g->n * g->n), sizeof(int));
   int *parents = (int *)malloc(g->n * sizeof(int));
   int *pathCapacities = (int *)calloc(g->n, sizeof(int));
+
+  int *d_flowMaxtrix;
+  int *d_parents;
+
+  cudaMalloc((void **)&d_flowMaxtrix,g->n * g->n * sizeof(int));
+  cudaMalloc((void **)&d_parents,g->n * sizeof(int));
+
   while (true)
   {
     int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
@@ -215,18 +222,22 @@ Flow *edKarpGpu(Graph *g, int s, int t)
     flow += tempCapacity;
     int v = t;
     // backtrack
-    while (v != s)
-    {
-      int u = parents[v];
-      flowMatrix[IDX(u, v, g->n)] += tempCapacity;
-      flowMatrix[IDX(v, u, g->n)] -= tempCapacity;
-      v = u;
-    }
+    //copy from host(my computer) to device(GPU)
+    cudaMemcpy(d_flowMaxtrix,flowMatrix,g->n * g->n * sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_parents,parents,g->n * sizeof(int),cudaMemcpyHostToDevice);
+    // backtrack
+
+    backTrack<<<1,1,>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,g->n);
+    //copy device to host
+    cudaMemcpy(flowMatrix,d_flowMaxtrix,g->n * g->n * sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(parents,d_parents,g->n * sizeof(int),cudaMemcpyDeviceToHost);
   }
   Flow *result = (Flow *)malloc(sizeof(Flow));
   result->maxFlow = flow;
   result->finalEdgeFlows = flowMatrix;
   free(parents);
   free(pathCapacities);
+  cudaFree(d_flowMaxtrix);
+  cudaFree(d_parents);
   return result;
 }
