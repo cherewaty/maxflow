@@ -12,7 +12,7 @@ CXX=g++
 NVCC=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
-CUDA_LINK_LIBS=-lcudat
+CUDA_LINK_LIBS=-lcudart
 
 
 OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
