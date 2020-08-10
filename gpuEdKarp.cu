@@ -1,8 +1,14 @@
 #include "gpuEdKarp.h"
+#include <algorithm>
+#include <limits>
+#include <queue>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "sequential.h"
 
-
-
-
+#define IDX(i, j, n) ((i) * (n) + (j))
+/*
 __device__ int indexFinder(int i,int n, int j){
     return ((i) * (n) + (j));
 }
@@ -106,10 +112,6 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
   return 0;
 }
 
-
-
-
-
 Flow *edKarpGpu(Graph *g, int s, int t){
     int flow = 0;
     int *flowMatrix = (int *)malloc(g->n * g->n * sizeof(int));
@@ -153,8 +155,79 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     cudaFree(d_parents);
     cudaFree(d_pathCapacities);
     return result;
+}*/
 
 
-Flow *dinicGpu(Graph *g, int s, int t){
-  // TODO: implement this
+
+/*
+*   Source from https://github.com/vulq/Flo
+*/
+
+int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t)
+{
+  memset(parents, -1, (g->n * sizeof(int)));
+  memset(pathCapacities, 0, (g->n * sizeof(int)));
+  parents[s] = s;
+  pathCapacities[s] = std::numeric_limits<int>::max();
+  std::queue<int> bfsQueue;
+  bfsQueue.push(s);
+  while (!bfsQueue.empty())
+  {
+    int u = bfsQueue.front();
+    bfsQueue.pop();
+    for (int v = 0; v < g->n; v++)
+    {
+      if (u == v)
+        continue;
+      int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
+      if ((residual > 0) && (parents[v] == -1))
+      {
+        parents[v] = u;
+        pathCapacities[v] = std::min(pathCapacities[u], residual);
+        if (v != t)
+        {
+          bfsQueue.push(v);
+        }
+        else
+        {
+          int result = pathCapacities[t];
+          return result;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+// Edmonds-Karp algorithm to find max s-t flow
+Flow *edKarpSeq(Graph *g, int s, int t)
+{
+  int flow = 0;
+  int *flowMatrix = (int *)calloc((g->n * g->n), sizeof(int));
+  int *parents = (int *)malloc(g->n * sizeof(int));
+  int *pathCapacities = (int *)calloc(g->n, sizeof(int));
+  while (true)
+  {
+    int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
+    if (tempCapacity == 0)
+    {
+      break;
+    }
+    flow += tempCapacity;
+    int v = t;
+    // backtrack
+    while (v != s)
+    {
+      int u = parents[v];
+      flowMatrix[IDX(u, v, g->n)] += tempCapacity;
+      flowMatrix[IDX(v, u, g->n)] -= tempCapacity;
+      v = u;
+    }
+  }
+  Flow *result = (Flow *)malloc(sizeof(Flow));
+  result->maxFlow = flow;
+  result->finalEdgeFlows = flowMatrix;
+  free(parents);
+  free(pathCapacities);
+  return result;
 }
