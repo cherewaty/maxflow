@@ -113,7 +113,6 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
 
   for (int i = 0; i < numGraphs; i++)
   {
-    // printf("graph %d, %d vxs, %d edges\n", i, numVxs[i], numEdges[i]);
     printf("graph %d\n", i);
 
     for (int j = 0; j < trials; j++)
@@ -124,15 +123,8 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
       result = func(graphs[i], 0, (graphs[i]->n) - 1);
       finalTime = CycleTimer::currentSeconds() - start;
 
-      if (i < numGraphs)
-      {
-        times[i] += finalTime;
-      }
+      times[j] = finalTime;
 
-      if (j == (trials - 1))
-      {
-        times[i] /= trials;
-      }
       check = checkFlow(result->maxFlow, result->finalEdgeFlows, graphs[i]->n);
 
       if (!check)
@@ -152,8 +144,15 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
 
       free(result->finalEdgeFlows);
       free(result);
-
-      printf("%s time %f\n", algorithmName.c_str(), finalTime);
     }
+
+    // calculate the average
+    double sum;
+    for (int k = 0; k < trials; k++)
+    {
+      sum += times[k];
+    }
+
+    printf("%s average seconds %f\n", algorithmName.c_str(), (sum / trials));
   }
 }
