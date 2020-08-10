@@ -8,7 +8,8 @@ CC_FILES   := main-gpu.cpp
 
 ARCH=$(shell uname | sed -e 's/-.*//g')
 OBJDIR=objs
-CXX=nvcc
+CXX=g++
+NVCC=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
 
@@ -31,3 +32,6 @@ $(EXECUTABLE): dirs $(OBJS)
 
 $(OBJDIR)/%.o: %.cpp
 		$(CXX) $< $(CXXFLAGS) -c -o $@
+
+$(OBJDIR)/%.o: %.cu
+		$(NVCC) $< $(CXXFLAGS) -c -o $@
