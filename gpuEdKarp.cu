@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sequential.h"
 
 #define IDX(i, j, n) ((i) * (n) + (j))
 /*
