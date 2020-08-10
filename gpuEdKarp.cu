@@ -199,7 +199,7 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
 }
 
 // Edmonds-Karp algorithm to find max s-t flow
-Flow *edKarpSeq(Graph *g, int s, int t)
+Flow *edKarpGpu(Graph *g, int s, int t)
 {
   int flow = 0;
   int *flowMatrix = (int *)calloc((g->n * g->n), sizeof(int));
