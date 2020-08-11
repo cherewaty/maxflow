@@ -17,6 +17,7 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
         atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity)
         v = u;
       }
+      
 }
 
 /*
