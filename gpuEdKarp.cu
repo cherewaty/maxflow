@@ -9,15 +9,14 @@
 #define IDX(i, j, n) ((i) * (n) + (j))
 
 __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapacity,int n){
-    while (v != s){
-        int u = parents[v];
-        //flowMatrix[IDX(u,v,n)] += tempCapacity;
-        //flowMatrix[IDX(v,u,n)] -= tempCapacity;
-        atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity);
-        atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity);
-        v = u;
-      }
-
+  int index = blockDim.x * blockIdx.x + threadIdx.x;
+  if(index < n){
+    int u = parents[index];
+    if (v != s && u != s){
+          atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity);
+          atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity);
+        }
+    }
 }
 
 /*
@@ -41,8 +40,8 @@ __global__ void nextQueue(int queueSize,int *addedToQueue,bool *hasResult,int *r
           }
         }
       }
-}
-
+}*/
+/*
 //Code Reference https://github.com/kaletap/bfs-cuda-gpu/blob/master/src/gpu/simple/bfs_simple.cu
 int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t,int *d_parents,int *d_flowMaxtrix,int *d_pathCapacities){
   memset(parents, -1, (g->n * sizeof(int)));
@@ -161,7 +160,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
 /*
 *   Source from https://github.com/vulq/Flo
 */
-
+/*
 int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t)
 {
   memset(parents, -1, (g->n * sizeof(int)));
@@ -196,20 +195,29 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
     }
   }
   return 0;
-}
+}*/
 
 // Edmonds-Karp algorithm to find max s-t flow
 Flow *edKarpGpu(Graph *g, int s, int t){
+  int sizeN = g->n;
   int flow = 0;
-  int *flowMatrix = (int *)calloc((g->n * g->n), sizeof(int));
-  int *parents = (int *)malloc(g->n * sizeof(int));
-  int *pathCapacities = (int *)calloc(g->n, sizeof(int));
+  int *flowMatrix = (int *)calloc((sizeN * sizeN), sizeof(int));
+  int *parents = (int *)malloc(sizeN * sizeof(int));
+  int *pathCapacities = (int *)calloc(sizeN, sizeof(int));
 
   int *d_flowMaxtrix;
   int *d_parents;
+  
 
-  cudaMalloc((void **)&d_flowMaxtrix,g->n * g->n * sizeof(int));
-  cudaMalloc((void **)&d_parents,g->n * sizeof(int));
+  //Code example https://stackoverflow.com/questions/9985912/how-do-i-choose-grid-and-block-dimensions-for-cuda-kernels
+  int blockSize; // The launch configurator returned block size 
+  int minGridSize; // The minimum grid size needed to achieve the maximum occupancy for a full device launch 
+  int gridSize; // The actual grid size needed, based on input size 
+  cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, backTrack, 0, sizeN);
+  gridSize = (N + blockSize - 1) / blockSize; 
+
+  cudaMalloc((void **)&d_flowMaxtrix,sizeN * sizeN * sizeof(int));
+  cudaMalloc((void **)&d_parents,sizeN * sizeof(int));
 
   while (true)
   {
@@ -222,14 +230,14 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     int v = t;
     // backtrack
     //copy from host(my computer) to device(GPU)
-    cudaMemcpy(d_flowMaxtrix,flowMatrix,g->n * g->n * sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemcpy(d_parents,parents,g->n * sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_flowMaxtrix,flowMatrix,sizeN * sizeN* sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_parents,parents,sizeN* sizeof(int),cudaMemcpyHostToDevice);
     // backtrack
 
-    backTrack<<<1,1>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,g->n);
+    backTrack<<<gridSize,blockSize>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
     //copy device to host
-    cudaMemcpy(flowMatrix,d_flowMaxtrix,g->n * g->n * sizeof(int),cudaMemcpyDeviceToHost);
-    cudaMemcpy(parents,d_parents,g->n * sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(flowMatrix,d_flowMaxtrix,sizeN * sizeN * sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(parents,d_parents,sizeN * sizeof(int),cudaMemcpyDeviceToHost);
   }
   Flow *result = (Flow *)malloc(sizeof(Flow));
   result->maxFlow = flow;
