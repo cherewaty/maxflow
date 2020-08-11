@@ -1,5 +1,6 @@
 #include "benchmark.h"
 #include "gpuEdKarp.h"
+#include "sequential.h"
 #define NUM_BLOCKS 1
 #define BLOCK_WIDTH 1
 
@@ -14,12 +15,12 @@ int main()
   int maxCap = 50;
   Graph *graphs[numGraphs];
 
-
   for (int i = 0; i < numGraphs; i++)
   {
     graphs[i] = generateGraph(numVxs[i], numEdges[i], maxCap);
   }
 
+  runTests("Edmonds-Karp", edKarpSeq, graphs, numGraphs, trials);
   runTests("Edmonds-Karp", edKarpGpu, graphs, numGraphs, trials);
   //Implement If time allows
   //runTests("Dinic's", dinicGpu, graphs, numGraphs, trials);
