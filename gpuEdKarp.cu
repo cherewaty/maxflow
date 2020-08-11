@@ -74,11 +74,11 @@ Flow *edKarpGpu(Graph *g, int s, int t){
   
 
   //Code example https://stackoverflow.com/questions/9985912/how-do-i-choose-grid-and-block-dimensions-for-cuda-kernels
-  int blockSize; // The launch configurator returned block size 
-  int minGridSize; // The minimum grid size needed to achieve the maximum occupancy for a full device launch 
-  int gridSize; // The actual grid size needed, based on input size 
-  cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, backTrack, 0, sizeN);
-  gridSize = (sizeN + blockSize - 1) / blockSize; 
+  //int blockSize; // The launch configurator returned block size 
+  //int minGridSize; // The minimum grid size needed to achieve the maximum occupancy for a full device launch 
+  //int gridSize; // The actual grid size needed, based on input size 
+  //cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, backTrack, 0, sizeN);
+  //gridSize = (sizeN + blockSize - 1) / blockSize; 
 
   cudaMalloc((void **)&d_flowMaxtrix,sizeN * sizeN * sizeof(int));
   cudaMalloc((void **)&d_parents,sizeN * sizeof(int));
@@ -98,7 +98,8 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     cudaMemcpy(d_parents,parents,sizeN* sizeof(int),cudaMemcpyHostToDevice);
     // backtrack
 
-    backTrack<<<gridSize,blockSize>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
+    //backTrack<<<gridSize,blockSize>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
+    backTrack<<<sizeN/32,32>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
     //copy device to host
     cudaMemcpy(flowMatrix,d_flowMaxtrix,sizeN * sizeN * sizeof(int),cudaMemcpyDeviceToHost);
     cudaMemcpy(parents,d_parents,sizeN * sizeof(int),cudaMemcpyDeviceToHost);
