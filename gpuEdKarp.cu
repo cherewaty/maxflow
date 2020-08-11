@@ -8,15 +8,13 @@
 
 #define IDX(i, j, n) ((i) * (n) + (j))
 
-__device__ int indexFinder(int i,int n, int j){
-    return ((i) * (n) + (j));
-}
-
 __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapacity,int n){
     while (v != s){
         int u = parents[v];
-        flowMatrix[indexFinder(u,v,n)] += tempCapacity;
-        flowMatrix[indexFinder(v,u,n)] -= tempCapacity;
+        //flowMatrix[IDX(u,v,n)] += tempCapacity;
+        //flowMatrix[IDX(v,u,n)] -= tempCapacity;
+        atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity)
+        atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity)
         v = u;
       }
 }
