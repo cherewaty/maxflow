@@ -20,8 +20,8 @@ int main()
     graphs[i] = generateGraph(numVxs[i], numEdges[i], maxCap);
   }
 
-  runTests("Edmonds-Karp", edKarpSeq, graphs, numGraphs, trials);
-  runTests("Edmonds-Karp", edKarpGpu, graphs, numGraphs, trials);
+  runTests("Edmonds-Karp, sequential", edKarpSeq, graphs, numGraphs, trials);
+  runTests("Edmonds-Karp, GPU", edKarpGpu, graphs, numGraphs, trials);
   //Implement If time allows
   //runTests("Dinic's", dinicGpu, graphs, numGraphs, trials);
 
