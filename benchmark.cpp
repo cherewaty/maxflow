@@ -113,7 +113,7 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
 
   for (int i = 0; i < numGraphs; i++)
   {
-    printf("graph %d\n", i);
+    printf("%s, graph %d\n", algorithmName.c_str(), i);
 
     for (int j = 0; j < trials; j++)
     {
@@ -122,6 +122,8 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
       start = CycleTimer::currentSeconds();
       result = func(graphs[i], 0, (graphs[i]->n) - 1);
       finalTime = CycleTimer::currentSeconds() - start;
+
+      printf("Trial %d - max flow computed: %d\n", (j + 1), result->maxFlow);
 
       times[j] = finalTime;
 
@@ -153,6 +155,6 @@ void runTests(std::string algorithmName, Flow *func(Graph *g, int s, int t), Gra
       sum += times[k];
     }
 
-    printf("%s average seconds %f\n", algorithmName.c_str(), (sum / trials));
+    printf("Average seconds to compute %f\n\n", (sum / trials));
   }
 }
