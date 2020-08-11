@@ -13,11 +13,11 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
         int u = parents[v];
         //flowMatrix[IDX(u,v,n)] += tempCapacity;
         //flowMatrix[IDX(v,u,n)] -= tempCapacity;
-        atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity)
-        atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity)
+        atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity);
+        atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity);
         v = u;
       }
-      
+
 }
 
 /*
