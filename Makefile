@@ -14,7 +14,7 @@ HOSTNAME=$(shell hostname)
 CUDA_LINK_LIBS=-lcudart
 
 
-OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
+OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/sequential.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
 
 
 .PHONY: dirs clean
