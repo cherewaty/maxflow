@@ -12,7 +12,7 @@
 *   Source from https://github.com/vulq/Flo
 */
 
-int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t)
+int sequentialBFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t)
 {
   memset(parents, -1, (g->n * sizeof(int)));
   memset(pathCapacities, 0, (g->n * sizeof(int)));
@@ -57,7 +57,7 @@ Flow *edKarpSeq(Graph *g, int s, int t)
   int *pathCapacities = (int *)calloc(g->n, sizeof(int));
   while (true)
   {
-    int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
+    int tempCapacity = sequentialBFS(g, flowMatrix, parents, pathCapacities, s, t);
     if (tempCapacity == 0)
     {
       break;

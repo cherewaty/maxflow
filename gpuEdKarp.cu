@@ -1,21 +1,26 @@
 #include "gpuEdKarp.h"
+#include <algorithm>
+#include <limits>
+#include <queue>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-
-
-
-__device__ int indexFinder(int i,int n, int j){
-    return ((i) * (n) + (j));
-}
+#define IDX(i, j, n) ((i) * (n) + (j))
 
 __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapacity,int n){
     while (v != s){
         int u = parents[v];
-        flowMatrix[indexFinder(u,v,n)] += tempCapacity;
-        flowMatrix[indexFinder(v,u,n)] -= tempCapacity;
+        //flowMatrix[IDX(u,v,n)] += tempCapacity;
+        //flowMatrix[IDX(v,u,n)] -= tempCapacity;
+        atomicAdd(&flowMatrix[IDX(u,v,n)],tempCapacity);
+        atomicSub(&flowMatrix[IDX(v,u,n)],tempCapacity);
         v = u;
       }
+
 }
 
+/*
 __global__ void nextQueue(int queueSize,int *addedToQueue,bool *hasResult,int *result,int *queue,int *queueIndex int *parents, int *pathCapacities,int u,int n,int *capacities, int *flowMatrix){
     *addedToQueue = 0;
     for (int v = 0; v < n; v++){
@@ -106,10 +111,6 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
   return 0;
 }
 
-
-
-
-
 Flow *edKarpGpu(Graph *g, int s, int t){
     int flow = 0;
     int *flowMatrix = (int *)malloc(g->n * g->n * sizeof(int));
@@ -153,8 +154,89 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     cudaFree(d_parents);
     cudaFree(d_pathCapacities);
     return result;
+}*/
 
 
-Flow *dinicGpu(Graph *g, int s, int t){
-  // TODO: implement this
+
+/*
+*   Source from https://github.com/vulq/Flo
+*/
+
+int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int t)
+{
+  memset(parents, -1, (g->n * sizeof(int)));
+  memset(pathCapacities, 0, (g->n * sizeof(int)));
+  parents[s] = s;
+  pathCapacities[s] = std::numeric_limits<int>::max();
+  std::queue<int> bfsQueue;
+  bfsQueue.push(s);
+  while (!bfsQueue.empty())
+  {
+    int u = bfsQueue.front();
+    bfsQueue.pop();
+    for (int v = 0; v < g->n; v++)
+    {
+      if (u == v)
+        continue;
+      int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
+      if ((residual > 0) && (parents[v] == -1))
+      {
+        parents[v] = u;
+        pathCapacities[v] = std::min(pathCapacities[u], residual);
+        if (v != t)
+        {
+          bfsQueue.push(v);
+        }
+        else
+        {
+          int result = pathCapacities[t];
+          return result;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+// Edmonds-Karp algorithm to find max s-t flow
+Flow *edKarpGpu(Graph *g, int s, int t){
+  int flow = 0;
+  int *flowMatrix = (int *)calloc((g->n * g->n), sizeof(int));
+  int *parents = (int *)malloc(g->n * sizeof(int));
+  int *pathCapacities = (int *)calloc(g->n, sizeof(int));
+
+  int *d_flowMaxtrix;
+  int *d_parents;
+
+  cudaMalloc((void **)&d_flowMaxtrix,g->n * g->n * sizeof(int));
+  cudaMalloc((void **)&d_parents,g->n * sizeof(int));
+
+  while (true)
+  {
+    int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
+    if (tempCapacity == 0)
+    {
+      break;
+    }
+    flow += tempCapacity;
+    int v = t;
+    // backtrack
+    //copy from host(my computer) to device(GPU)
+    cudaMemcpy(d_flowMaxtrix,flowMatrix,g->n * g->n * sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_parents,parents,g->n * sizeof(int),cudaMemcpyHostToDevice);
+    // backtrack
+
+    backTrack<<<1,1>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,g->n);
+    //copy device to host
+    cudaMemcpy(flowMatrix,d_flowMaxtrix,g->n * g->n * sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(parents,d_parents,g->n * sizeof(int),cudaMemcpyDeviceToHost);
+  }
+  Flow *result = (Flow *)malloc(sizeof(Flow));
+  result->maxFlow = flow;
+  result->finalEdgeFlows = flowMatrix;
+  free(parents);
+  free(pathCapacities);
+  cudaFree(d_flowMaxtrix);
+  cudaFree(d_parents);
+  return result;
 }

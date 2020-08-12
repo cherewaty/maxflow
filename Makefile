@@ -11,9 +11,10 @@ OBJDIR=objs
 CXX=nvcc
 CXXFLAGS=
 HOSTNAME=$(shell hostname)
+CUDA_LINK_LIBS=-lcudart
 
 
-OBJS=$(OBJDIR)/gpu.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
+OBJS=$(OBJDIR)/gpuEdKarp.o $(OBJDIR)/sequential.o $(OBJDIR)/benchmark.o $(OBJDIR)/main-gpu.o
 
 
 .PHONY: dirs clean
@@ -27,7 +28,10 @@ clean:
 		rm -rf $(OBJDIR) *~ maxflow maxflow-sequential
 
 $(EXECUTABLE): dirs $(OBJS)
-		$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+		$(CXX) $(CXXFLAGS) -o $@ $(OBJS) 
 
 $(OBJDIR)/%.o: %.cpp
+		$(CXX) $< $(CXXFLAGS) -c -o $@
+
+$(OBJDIR)/%.o: %.cu
 		$(CXX) $< $(CXXFLAGS) -c -o $@
