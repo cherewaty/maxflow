@@ -13,8 +13,10 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
   if(index < n){
     if (index != s ){
       int u = parents[index];
-      atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
-      atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
+      if(u > -1){
+        atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
+        atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
+      }
     }    
   }
 
