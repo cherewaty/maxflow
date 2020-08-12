@@ -17,6 +17,8 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
     if (index != s ){
       int u = parents[index];
       if(u > -1){
+        printf("U %d and   Index %d \n",u,index);
+        printf("flowMatrix bactrack %d \n",flowMatrix[IDX(u,index,n)] );
         atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
         atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
       }
@@ -46,9 +48,11 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
     {
       if (u == v)
         continue;
+      printf("flowmatrix bfs %d",flowMatrix[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
       if ((residual > 0) && (parents[v] == -1))
       {
+        printf("parents u %d v %",u,v);
         parents[v] = u;
         pathCapacities[v] = std::min(pathCapacities[u], residual);
         if (v != t)
