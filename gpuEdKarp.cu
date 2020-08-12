@@ -22,7 +22,7 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
       }
     }    
   }
-
+  __syncthreads();
 }
 
 /*
@@ -76,14 +76,6 @@ Flow *edKarpGpu(Graph *g, int s, int t){
 
   int *d_flowMaxtrix;
   int *d_parents;
-  
-
-  //Code example https://stackoverflow.com/questions/9985912/how-do-i-choose-grid-and-block-dimensions-for-cuda-kernels
-  //int blockSize; // The launch configurator returned block size 
-  //int minGridSize; // The minimum grid size needed to achieve the maximum occupancy for a full device launch 
-  //int gridSize; // The actual grid size needed, based on input size 
-  //cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, backTrack, 0, sizeN);
-  //gridSize = (sizeN + blockSize - 1) / blockSize; 
 
   cudaMalloc((void **)&d_flowMaxtrix,sizeN * sizeN * sizeof(int));
   cudaMalloc((void **)&d_parents,sizeN * sizeof(int));
