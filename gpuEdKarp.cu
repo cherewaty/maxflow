@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cuda.h>
 
 #define UPDIV(n, d)   (((n) + (d) - 1) / (d))
 #define IDX(i, j, n) ((i) * (n) + (j))
