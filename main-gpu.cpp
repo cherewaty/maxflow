@@ -22,8 +22,7 @@ int main()
 
   runTests("Edmonds-Karp, sequential", edKarpSeq, graphs, numGraphs, trials);
   runTests("Edmonds-Karp, GPU", edKarpGpu, graphs, numGraphs, trials);
-  //Implement If time allows
-  //runTests("Dinic's", dinicGpu, graphs, numGraphs, trials);
+  runTests("Dinic's, sequential", dinicSeq, graphs, numGraphs, trials);
 
   return 0;
 }
