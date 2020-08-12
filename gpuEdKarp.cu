@@ -17,8 +17,8 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
     if (index != s ){
       int u = parents[index];
       if(u > -1){
-        atomicAdd(&flowMatrix[IDX(index,u,n)],tempCapacity);
-        atomicSub(&flowMatrix[IDX(u,index,n)],tempCapacity);
+        atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
+        atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
       }
     }    
   }
@@ -70,9 +70,9 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
 Flow *edKarpGpu(Graph *g, int s, int t){
   int sizeN = g->n;
   int flow = 0;
-  int *flowMatrix = (int *)calloc((sizeN * sizeN), sizeof(int));
+  int *flowMatrix = (int *)malloc((sizeN * sizeN) * sizeof(int));
   int *parents = (int *)malloc(sizeN * sizeof(int));
-  int *pathCapacities = (int *)calloc(sizeN, sizeof(int));
+  int *pathCapacities = (int *)malloc(sizeN * sizeof(int));
 
   int *d_flowMaxtrix;
   int *d_parents;
