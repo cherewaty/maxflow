@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define UPDIV(n, d)   (((n) + (d) - 1) / (d))
 #define IDX(i, j, n) ((i) * (n) + (j))
+static dim3 threadsPerBlock(1024, 1, 1);
 
 __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapacity,int n){
   int index = blockDim.x * blockIdx.x + threadIdx.x;
@@ -101,7 +103,8 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     // backtrack
 
     //backTrack<<<gridSize,blockSize>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
-    backTrack<<<(sizeN/32) + 1,32>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
+    int numBlocks = UPDIV(sizeN-2,threadsPerBlock);
+    backTrack<<<numBlocks,threadsPerBlock>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
     //copy device to host
     cudaMemcpy(flowMatrix,d_flowMaxtrix,sizeN * sizeN * sizeof(int),cudaMemcpyDeviceToHost);
     cudaMemcpy(parents,d_parents,sizeN * sizeof(int),cudaMemcpyDeviceToHost);
