@@ -104,7 +104,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     // backtrack
 
     //backTrack<<<gridSize,blockSize>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
-    int numBlocks = UPDIV(sizeN-2,threadsPerBlock);
+    int numBlocks = UPDIV((sizeN-2),threadsPerBlock);
     backTrack<<<numBlocks,threadsPerBlock>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
     //copy device to host
     cudaMemcpy(flowMatrix,d_flowMaxtrix,sizeN * sizeN * sizeof(int),cudaMemcpyDeviceToHost);
