@@ -48,11 +48,11 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
     {
       if (u == v)
         continue;
-      printf("flowmatrix bfs %d",flowMatrix[IDX(u, v, g->n)]);
+      printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
       if ((residual > 0) && (parents[v] == -1))
       {
-        printf("parents u %d v %",u,v);
+        printf("parents u %d v \n%",u,v);
         parents[v] = u;
         pathCapacities[v] = std::min(pathCapacities[u], residual);
         if (v != t)
