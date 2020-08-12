@@ -17,8 +17,8 @@ int main()
     graphs[i] = generateGraph(numVxs[i], numEdges[i], maxCap);
   }
 
-  runTests("Edmonds-Karp", edKarpSeq, graphs, numGraphs, trials);
-  runTests("Dinic's", dinicSeq, graphs, numGraphs, trials);
+  runTests("Edmonds-Karp, sequential", edKarpSeq, graphs, numGraphs, trials);
+  runTests("Dinic's, sequential", dinicSeq, graphs, numGraphs, trials);
 
   return 0;
 }
