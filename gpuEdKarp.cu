@@ -103,7 +103,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
     int numBlocks = UPDIV((sizeN-2),threadsPerBlock.x);
     backTrack<<<numBlocks,threadsPerBlock>>>(d_parents,d_flowMaxtrix,s,v,tempCapacity,sizeN);
     
-    cudaThreadSynchronize()
+    cudaThreadSynchronize();
     //copy device to host
     cudaMemcpy(flowMatrix,d_flowMaxtrix,sizeN * sizeN * sizeof(int),cudaMemcpyDeviceToHost);
     //cudaMemcpy(parents,d_parents,sizeN * sizeof(int),cudaMemcpyDeviceToHost);
