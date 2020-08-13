@@ -28,9 +28,6 @@ int sequentialBFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, 
     {
       if (u == v)
         continue;
-      printf("Loop U %d , V %d\n",u,v);
-      printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
-      printf("cap bfs %d\n",g->capacities[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
       if ((residual > 0) && (parents[v] == -1))
       {
