@@ -45,6 +45,7 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
       if (u == v){
         continue;
       }
+      printf("Loop U %d , V %d\n"u,v);
       printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
       printf("cap bfs %d\n",g->capacities[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
@@ -61,6 +62,7 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
       }
     }
   }
+  printf("pathCap %d\n"pathCapacities[t]);
   return 0;
 }
 
