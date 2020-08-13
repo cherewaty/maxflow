@@ -82,7 +82,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
 
   while (true){
     int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
-    printf("temp cap %d\n",tempCapacity);
+    printf("***************************temp cap %d\n",tempCapacity);
     if (tempCapacity == 0){
       break;
     }
