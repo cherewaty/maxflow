@@ -17,8 +17,6 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
     if (index != s ){
       int u = parents[index];
       if(u > -1){
-        printf("U %d and   Index %d \n",u,index);
-        printf("flowMatrix bactrack %d \n",flowMatrix[IDX(u,index,n)] );
         atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
         atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
       }
@@ -40,27 +38,23 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
   pathCapacities[s] = std::numeric_limits<int>::max();
   std::queue<int> bfsQueue;
   bfsQueue.push(s);
-  while (!bfsQueue.empty())
-  {
+  while (!bfsQueue.empty()){
     int u = bfsQueue.front();
     bfsQueue.pop();
-    for (int v = 0; v < g->n; v++)
-    {
-      if (u == v)
+    for (int v = 0; v < g->n; v++){
+      if (u == v){
         continue;
+      }
       printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
+      printf("cap bfs %d\n",g->capacities[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
-      if ((residual > 0) && (parents[v] == -1))
-      {
+      if ((residual > 0) && (parents[v] == -1)){
         printf("parents u %d v %d \n%",u,v);
         parents[v] = u;
         pathCapacities[v] = std::min(pathCapacities[u], residual);
-        if (v != t)
-        {
+        if (v != t){
           bfsQueue.push(v);
-        }
-        else
-        {
+        }else{
           int result = pathCapacities[t];
           return result;
         }
@@ -84,12 +78,10 @@ Flow *edKarpGpu(Graph *g, int s, int t){
   cudaMalloc((void **)&d_flowMaxtrix,sizeN * sizeN * sizeof(int));
   cudaMalloc((void **)&d_parents,sizeN * sizeof(int));
 
-  while (true)
-  {
+  while (true){
     int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
     printf("temp cap %d\n",tempCapacity);
-    if (tempCapacity == 0)
-    {
+    if (tempCapacity == 0){
       break;
     }
     flow += tempCapacity;
@@ -114,6 +106,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
   result->finalEdgeFlows = flowMatrix;
   free(parents);
   free(pathCapacities);
+  free(flowMatrix);
   cudaFree(d_flowMaxtrix);
   cudaFree(d_parents);
   return result;
