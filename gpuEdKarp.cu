@@ -76,7 +76,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
 
   int *d_flowMaxtrix;
   int *d_parents;
-
+  memset(flowMatrix, 0, (sizeN * sizeN *sizeof(int)));
   cudaMalloc((void **)&d_flowMaxtrix,sizeN * sizeN * sizeof(int));
   cudaMalloc((void **)&d_parents,sizeN * sizeof(int));
 
