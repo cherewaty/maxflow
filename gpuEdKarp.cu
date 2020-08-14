@@ -17,7 +17,7 @@ __global__ void backTrack(int *parents,int *flowMatrix, int s,int v,int tempCapa
     if (index != s ){
       int u = parents[index];
       if(u > -1){
-        printf("!!!!!! bt u %d v %d",u,index);
+       //printf("!!!!!! bt u %d v %d",u,index);
         atomicAdd(&flowMatrix[IDX(u,index,n)],tempCapacity);
         atomicSub(&flowMatrix[IDX(index,u,n)],tempCapacity);
       }
@@ -46,12 +46,12 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
       if (u == v){
         continue;
       }
-      printf("Loop U %d , V %d\n",u,v);
-      printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
-      printf("cap bfs %d\n",g->capacities[IDX(u, v, g->n)]);
+     // printf("Loop U %d , V %d\n",u,v);
+      //printf("flowmatrix bfs %d\n",flowMatrix[IDX(u, v, g->n)]);
+     // printf("cap bfs %d\n",g->capacities[IDX(u, v, g->n)]);
       int residual = g->capacities[IDX(u, v, g->n)] - flowMatrix[IDX(u, v, g->n)];
       if ((residual > 0) && (parents[v] == -1)){
-        printf("$$$$$ parents u %d v %d \n%",u,v);
+        //printf("$$$$$ parents u %d v %d \n%",u,v);
         parents[v] = u;
         pathCapacities[v] = std::min(pathCapacities[u], residual);
         if (v != t){
@@ -63,7 +63,7 @@ int BFS(Graph *g, int *flowMatrix, int *parents, int *pathCapacities, int s, int
       }
     }
   }
-  printf("pathCap %d\n",pathCapacities[t]);
+ // printf("pathCap %d\n",pathCapacities[t]);
   return 0;
 }
 
@@ -83,7 +83,7 @@ Flow *edKarpGpu(Graph *g, int s, int t){
 
   while (true){
     int tempCapacity = BFS(g, flowMatrix, parents, pathCapacities, s, t);
-    printf("***************************temp cap %d\n",tempCapacity);
+    //printf("***************************temp cap %d\n",tempCapacity);
     if (tempCapacity == 0){
       break;
     }
